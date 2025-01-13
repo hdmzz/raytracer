@@ -8,7 +8,7 @@ class	Vector3 {
 		double	e[3];// tableau de double pour les coordonnees x y z
 		Vector3(): e{0, 0, 0} {};
 		Vector3(double x, double y, double z): e{x, y, z} {};
-		~Vector3();
+		~Vector3(){};
 
 		double	x()  const { return e[0]; }
 		double	y()  const { return e[1]; }
@@ -30,12 +30,16 @@ class	Vector3 {
 			e[0] += v.e[0];
 			e[1] += v.e[1];
 			e[2] += v.e[2];
+
+			return *this;
 		};
 
 		Vector3&	operator*=(double t) {
 			e[0] *= t;
 			e[1] *= t;
 			e[2] *= t;
+
+			return *this;
 		};
 
 		Vector3&	operator/=(double t) {

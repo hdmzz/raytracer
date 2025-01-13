@@ -1,5 +1,6 @@
 #include <iostream>
-
+#include "../include/Vector3.hpp"
+#include "../include/Color.hpp"
 //le format PPM: un fichier qui contient dans les premieres lignes:
 //P3 ==> le format PPM = portable pixmap
 //3 2  ==> le nombre de colonnes et le nombre de ligne ici 3 col 2 ligne
@@ -9,21 +10,12 @@ int	main(void)
 {
 	int	img_width = 256;
 	int	img_height = 256;
-
 	std::cout << "P3\n" << img_width << ' ' << img_height << "\n255\n";
 	for (int j = 0; j < img_height; j++) {
 		std::clog << "\rScanlines Remainings : " << (img_height - j) << ' ' << std::flush;
 		for (int i = 0; i < img_width; i++) {
-			//i et j sont caster  en double, on se retrouve avec des chiffres entre 0 et -1
-			auto	r = double(i) / (img_width - 1);
-			auto	g = double(j) / (img_height - 1);
-			auto	b = 0.0;
-			//mutiplier par 255.999 pour s'assurer que les valeurs s'etalent bien sur la plage 0 ==> 255
-			int		ir = int(255.999 * r);
-			int		ig = int(255.999 * g);
-			int		ib = int(255.999 * b);
-
-			std::cout << ir << ' ' << ig << ' ' << ib << '\n';//sortie sur la sortie standard que l'on redirigera dans un fichier
+			Vector3	v = Vector3(double(i) / (img_width - 1), double(j) / (img_height - 1), 0.0);
+			write_color(std::cout, v);
 		};
 	};
 	std::clog << "\rDone.				\n";
