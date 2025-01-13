@@ -11,8 +11,9 @@ int	main(void)
 	int	img_height = 256;
 
 	std::cout << "P3\n" << img_width << ' ' << img_height << "\n255\n";
-	for (int j = 0; j < img_width; j++) {
-		for (int i = 0; i < img_height; i++) {
+	for (int j = 0; j < img_height; j++) {
+		std::clog << "\rScanlines Remainings : " << (img_height - j) << ' ' << std::flush;
+		for (int i = 0; i < img_width; i++) {
 			//i et j sont caster  en double, on se retrouve avec des chiffres entre 0 et -1
 			auto	r = double(i) / (img_width - 1);
 			auto	g = double(j) / (img_height - 1);
@@ -22,8 +23,9 @@ int	main(void)
 			int		ig = int(255.999 * g);
 			int		ib = int(255.999 * b);
 
-			std::cout << ir << ' ' << ig << ' ' << ib << '\n';
+			std::cout << ir << ' ' << ig << ' ' << ib << '\n';//sortie sur la sortie standard que l'on redirigera dans un fichier
 		};
 	};
+	std::clog << "\rDone.				\n";
 	return (0);
 };
