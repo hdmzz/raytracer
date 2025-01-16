@@ -53,7 +53,6 @@ class	Vector3 {
 		double	lenght() const {
 			return std::sqrt(this->lenght_squared());
 		};
-
 };
 
 using	Point3 = Vector3;//on peut appeler la classe Vector 3 en la nommant Point3 au lieu de Vector3
@@ -83,7 +82,7 @@ inline Vector3	operator*(const Vector3& v, double t) {
 	return t * v;
 };
 
-inline Vector3	operator/(double t, const Vector3& v) {
+inline Vector3	operator/(const Vector3& v, double t) {
 	return (1/t) * v;
 };
 
@@ -98,5 +97,11 @@ inline Vector3	cross(const Vector3& u, const Vector3& v) {
 				u.e[2] * v.e[0] - u.e[0] * v.e[2],
 				u.e[0] * v.e[1] - u.e[1] * v.e[0]);
 };
+
+//fonction pour normaliser un vecteur ramener sa magnitude a 1 pour les calcul n'ayant besoin que de la direction
+inline Vector3	unit_vector(const Vector3& v) {
+	return v / v.lenght();
+};
+
 
 #endif

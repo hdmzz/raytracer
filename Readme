@@ -1,0 +1,8 @@
+
+# Raytracing: mais kecekece
+
+Principe de base:
+
+- [1] Lancement de rayon: Pour chaque pixel de l'image un rayon est lance depuis la camera vers la scene
+- [2] Interaction avec les objets: Le rayon interagit  avec les objets  de la scene, changeant de direction en fonction des proprietees des objets (reflexion,refraction, absorption).
+- [3] Calcul de la couleur: La couleur finale du pixel est calculee en fonction des interaction, du rayon avec les objets de la scene et les sources lumineuses
