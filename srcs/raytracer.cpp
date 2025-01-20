@@ -9,8 +9,26 @@
 // puis des sequences de chiffre rgb encoded par triplet
 
 //Pour le calcul de la couleur, normaliser le vecteur, puis, definir un facteur t qui varie entre 0 et 1 pour le lerp, ici, on prendra la valeur y du vecteur nomalise
+/*
+	- center ==> le centre de la sphere
+	- radius ==> le rayon de cette sphere
+	- ray  ==>  
+*/
+bool	hit_sphere(const Point3& center, double radius, const Ray& ray) {
+	Vector3	oc = center - ray.origin();
+	auto	a = dot(ray.direction(), ray.direction());
+	auto	b = -2.0 * dot(ray.direction(), oc);
+	auto	c = dot(oc, oc) -  radius*radius;
+	auto	discriminant = b*b - 4*a*c;
+
+	return (discriminant > 0);
+};
 // + 1 diviser par 2
 Color	ray_color(const Ray& r) {
+	if (hit_sphere(Point3(0,0,-1), 0.5, r)) {
+		return Color(1, 0, 0);
+	};
+
 	Vector3	unit_direction = unit_vector(r.direction());
 	//le facteur t
 	double	t = 0.5*(unit_direction.y()  + 1);
@@ -49,6 +67,7 @@ int	main(void)
 		for (int i = 0; i < image_width; i++) {
 			auto	pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);//centre du pixel qui nous concerne
 			auto	ray_direction = pixel_center - camera_center;
+			if (i == 2 ) std::clog << "Ray direction " << ray_direction << std::endl << std::flush;
 			Ray		r(camera_center, ray_direction);
 
 			Color	pixel_color = ray_color(r);
