@@ -15,7 +15,7 @@ class Ray
 		const Point3&	origin() const;
 		const Vector3&	direction() const;
 
-		Point3	at(double t);
+		Point3	at(double t) const;
 };
 
 Ray::Ray() {};
@@ -27,4 +27,4 @@ Ray::~Ray() {};
 const Point3&	Ray::origin() const { return this->orig; };
 const Vector3&	Ray::direction() const { return this->dir; };
 
-Point3			Ray::at(double t) { return (orig + t*dir); };
+Point3			Ray::at(double t) const { return (orig + t*dir); };
