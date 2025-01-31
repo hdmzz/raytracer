@@ -1,6 +1,7 @@
 #include "raytracer.hpp"
 #include "Hittable_list.hpp"
 #include "Sphere.hpp"
+#include <random>
 /**
  * @param r le rayon lancé
  * @param world une reference constante a un objet de type hittable, l'objet est un Hittable List mais on recoit un hittable 
@@ -33,6 +34,13 @@ Color	ray_color(const Ray& r, const Hittable& world)
 	return (1 - a) * Color(1,1,1) + Color(0.5, 0.7, 1.0) * a;
 };
 
+// Amélioration de la fonction random_double avec plus de précision
+inline double random_double() {
+    static std::mt19937_64 gen(std::random_device{}());  // 64-bit Mersenne Twister
+    static std::uniform_real_distribution<double> dis(0.0, 1.0);
+    return dis(gen);
+}
+
 int	main(void)
 {
 	auto	aspect_ratio = 16.0 / 9.0;
@@ -59,20 +67,29 @@ int	main(void)
 
     Hittable_list world;
 
-    world.add(make_shared<Sphere>(Point3(0,0,-1), 0.1));
-    world.add(make_shared<Sphere>(Point3(1.5,0,-1), 1.0));
+    world.add(make_shared<Sphere>(Point3(0, 0, -1), 0.4));
+    world.add(make_shared<Sphere>(Point3(0.9, 0, -1), 0.4));
+
+    // Augmentation significative du nombre d'échantillons
+    int samples_per_pixel = 100;  // 100 échantillons au lieu de 4
 
 	std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 	for (int j = 0; j < image_height; j++) {
 		std::clog << "\rScanlines Remainings : " << (image_height - j) << '\n' << std::flush;
 		for (int i = 0; i < image_width; i++) {
-			auto	pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);//centre du pixel qui nous concerne
-			auto	ray_direction = pixel_center - camera_center;
-			Ray		r(camera_center, ray_direction);
+            Color pixel_color(0, 0, 0);
+            for (int s = 0; s < samples_per_pixel; s++) {
+                auto u = (i + random_double()) / (image_width - 1.0);
+                auto v = (j + random_double()) / (image_height - 1.0);
+                auto sample_loc = viewport_uppper_left + (u * viewport_u) + (v * viewport_v);
+                Ray r(camera_center, sample_loc - camera_center);
+                pixel_color += ray_color(r, world);
+            }
+            auto r = sqrt(pixel_color.x() / samples_per_pixel);
+            auto g = sqrt(pixel_color.y() / samples_per_pixel);
+            auto b = sqrt(pixel_color.z() / samples_per_pixel);
 
-			Color	pixel_color = ray_color(r, world);
-
-			write_color(std::cout, pixel_color);
+            write_color(std::cout, Color(r, g, b));
 		};
 	};
 	std::clog << "\rDone.\n";

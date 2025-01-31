@@ -7,7 +7,7 @@
 #include "Color.hpp"
 #include "Ray.hpp"
 #include "Vector3.hpp"
-
+#include "Hittable_list.hpp"
 
 // C++ Std Usings
 using std::make_shared;
