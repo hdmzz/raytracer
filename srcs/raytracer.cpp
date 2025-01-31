@@ -1,46 +1,32 @@
-#include <iostream>
-#include "../include/Vector3.hpp"
-#include "../include/Color.hpp"
-#include "../include/Ray.hpp"
-
-/**
- * @param center The center of the sphere.
- * @param radius The radius of the sphere.
- * @param ray The ray being cast.
- * @return The distance to the sphere if hit, otherwise -1.
- */
-double	hit_sphere(const Point3& center, double radius, const Ray& ray) {
-	Vector3	oc = center - ray.origin();
-	auto	a = dot(ray.direction(), ray.direction());
-	auto	b = -2.0 * dot(ray.direction(), oc);
-	auto	c = dot(oc, oc) -  radius*radius;
-	auto	discriminant = b*b - 4*a*c;
-
-	if (discriminant < 0) {
-		return (-1);
-	} else {
-		//on resout l'equation et retourne une valeur correspondant a une distance dans notre cas la distance pour laquelle le rayon touche la sphere
-		return ((-b - std::sqrt(discriminant)) / (2.0 * a));
-	};
-};
-
+#include "raytracer.hpp"
+#include "Hittable_list.hpp"
+#include "Sphere.hpp"
 /**
  * @param r le rayon lancé
+ * @param world une reference constante a un objet de type hittable, l'objet est un Hittable List mais on recoit un hittable 
+ * dont hittable list herite la conversion est implicite
  * la fonction calcul le parametre t qui resout l'équation quadratique de la sphere
  * nous avons besoin du point d'intersection pour les normales
- * Donc recuperation du t, puis, calcul de la normal a partir de ce point: le point du rayon en question ( car t est une distance par rapport au point d'origine dan sune direction donnee) moins
- * le centre de la sphere que l'on touche
+ * Donc recuperation du t, puis, calcul de la normal a partir de ce point: le point du rayon en question
+ * ( car t est une distance par rapport au point d'origine dans une direction donnee) moins le centre de la sphere que l'on touche
  *
  * r.at(t) donnera le point d'intersection auquel on soustrai le centre de la sphere V3(0,0,-1)
  *
- * Sinon on retourn une interpolation lineaire pour creer un gradient de blue vers le blanc comme au depart;
+ * Sinon, on retourne une interpolation lineaire pour creer un gradient de blue vers le blanc comme au depart;
+ *
+ *
+ * Nouvelle facon de faire:
+ * pour chaque objet contenu dans le 'monde' world==> appeller la fonction hit de l'objet et lui passer le rayon le tmin et tmax et un objet de type hit Record
+
  */
-Color	ray_color(const Ray& r) {
-	double	t = hit_sphere(Point3(0,0,-1), 0.5, r);
-	if (t > 0.0) {
-		Vector3	n = unit_vector(r.at(t) - Vector3(0,0,-1));
-		return (0.5*Color(n.x() + 1, n.y() + 1, n.z() + 1));
-	};
+Color	ray_color(const Ray& r, const Hittable& world)
+{
+    Hit_Record  hit_record;
+
+    if (world.hit(r, 0, infinity, hit_record)) {
+        return 0.5 * (hit_record.normal + Color(1,1,1));
+    };
+
 	Vector3	unit_direction = unit_vector(r.direction());
 	double	a = 0.5*(unit_direction.y()  + 1);
 
@@ -71,6 +57,11 @@ int	main(void)
 
 	image_height = image_height < 1 ? 1: image_height;
 
+    Hittable_list world;
+
+    world.add(make_shared<Sphere>(Point3(0,0,-1), 0.1));
+    world.add(make_shared<Sphere>(Point3(1.5,0,-1), 1.0));
+
 	std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 	for (int j = 0; j < image_height; j++) {
 		std::clog << "\rScanlines Remainings : " << (image_height - j) << '\n' << std::flush;
@@ -79,11 +70,11 @@ int	main(void)
 			auto	ray_direction = pixel_center - camera_center;
 			Ray		r(camera_center, ray_direction);
 
-			Color	pixel_color = ray_color(r);
+			Color	pixel_color = ray_color(r, world);
 
 			write_color(std::cout, pixel_color);
 		};
 	};
-	std::clog << "\rDone.				\n";
+	std::clog << "\rDone.\n";
 	return (0);
 };

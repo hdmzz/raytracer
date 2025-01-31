@@ -2,7 +2,7 @@ NAME	= raytracer
 
 # Compiler and flags
 CXX	= g++
-CXXFLAGS	= -Wall -Wextra -Werror -std=c++11 -I include
+CXXFLAGS	= -Wall -Wextra -std=c++11 -I include
 
 # Directories
 SRC_DIR	= srcs
